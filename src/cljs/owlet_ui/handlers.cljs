@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
+            [owlet-ui.firebase :refer [ref-for-path am-i-online?]]
             [ajax.core :refer [GET POST PUT]]))
 
 
@@ -133,7 +134,8 @@
                        (prn err)
                        (do
                          (re/dispatch [:user-has-logged-in-out! true])
-                         (re/dispatch [:update-social-id! (.-user_id profile)])))))
+                         (re/dispatch [:update-social-id! (.-user_id profile)])
+                         (re/dispatch [:set-owlet-user-presence (.-user_id profile)])))))
       db)))
 
 (re/register-handler
@@ -219,3 +221,18 @@
   (fn [_ [_ activities activity]]
     (some #(when (= (get-in % [:fields :title]) activity) %)
           activities)))
+
+(re/register-handler
+  :set-owlet-user-presence
+  (fn [db [_ user-profile]]
+    (let [am-i-online-ref am-i-online?
+          player-ref (ref-for-path (str "presence/" user-profile))
+          _ (.on am-i-online-ref "value"
+                 (fn [snapshot]
+                   (when (.val snapshot)
+                     (do
+                       (-> player-ref
+                           .onDisconnect
+                           .remove)
+                       (.set player-ref true)))))]
+      db)))

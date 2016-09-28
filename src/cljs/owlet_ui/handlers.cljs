@@ -1,6 +1,6 @@
 (ns owlet-ui.handlers
   (:require [re-frame.core :as re]
-            [owlet-ui.db :as db]
+            [owlet-ui.db :as db :refer [error-bubble]]
             [owlet-ui.config :as config]
             [ajax.core :refer [GET POST PUT]]))
 
@@ -8,7 +8,7 @@
 (re/register-handler
   :initialize-db
   (fn [_ _]
-    db/default-db))
+    db/user-state-default))
 
 
 (re/register-handler
@@ -34,7 +34,7 @@
 (re/register-handler
   :reset-user-db!
   (fn [_ [_ _]]
-    db/default-db))
+    db/user-state-default))
 
 
 (re/register-handler
@@ -130,7 +130,10 @@
       (.getProfile config/lock user-token
                    (fn [err profile]
                      (if (not (nil? err))
-                       (.log js/console err)
+                       (let [msg (.-message err)]
+                         (reset! db/error-name msg)
+                         (reset! db/error-message "'cause you arent logged in")
+                         (prn @error-bubble))
                        (do
                          (re/dispatch [:user-has-logged-in-out! true])
                          (re/dispatch [:update-social-id! (.-user_id profile)])))))

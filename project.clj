@@ -14,7 +14,8 @@
                  [reagent-utils "0.1.7"]
                  [figwheel-sidecar "0.5.4-7"]
                  [cljsjs/bootstrap "3.3.6-1"]
-                 [cljsjs/firebase "3.2.1-0"]]
+                 [cljsjs/firebase "3.2.1-0"]
+                 [javelin "3.8.1"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]

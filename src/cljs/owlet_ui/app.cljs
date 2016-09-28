@@ -7,7 +7,8 @@
               [owlet-ui.views.activity :refer [activity-view]]
               [owlet-ui.views.tracks :refer [tracks-view]]
               [owlet-ui.views.settings :refer [settings-view]]
-              [owlet-ui.views.track-activities :refer [track-activities-view]]))
+              [owlet-ui.views.track-activities :refer [track-activities-view]]
+              [owlet-ui.components.error :refer [error-component]]))
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
@@ -29,4 +30,6 @@
         [sidebar-component]
         [:div.content
           [header-component]
-          [show-view @active-view]]])))
+          [show-view @active-view]]
+        [:footer
+         [error-component]]])))

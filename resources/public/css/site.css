@@ -136,3 +136,10 @@ button {
   float: left;
   margin: 3em 2em 2em 2em;
 }
+/* error display css */
+.error-display {
+  width: 100%;
+  background: rgba(100, 100, 100, 0.005);
+  z-index: 999999;
+  border: 5px solid black;
+}

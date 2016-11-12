@@ -1,5 +1,6 @@
 (ns owlet-ui.views.settings
   (:require
+    [owlet-ui.components.settings.activity-classifier :refer [activity-classsifer-component]]
     [owlet-ui.utils :refer [get-user-cms-profile]]
     [owlet-ui.config :as config]
     [reagent.validation :as validation]
@@ -20,10 +21,13 @@
            #(reset! district-id (:district_id %))))
        :reagent-render
        (fn []
-         [:div.container
-          [:div.row
-           [:div.col-lg-12
-             [:h1 "My Settings"]
+         [:div.settings
+          [:h1#title [:mark "My Settings"]]
+          [:div.container
+           [:div.row
+            [:div.col-lg-6
+             [activity-classsifer-component]]
+            [:div.col-lg-12
              [:div.search
               [:label "District ID:"
                [:input.test {:type        "text"
@@ -35,8 +39,8 @@
                         :value    "Enter"
                         :on-click #(when (and (validation/has-value? (session/get :user-id))
                                               (validation/has-value? @district-id))
-                                    (PUT (str config/server-url "/api/users-district-id")
-                                         {:params  {:district-id @district-id
-                                                    :user-id     (session/get :user-id)}
-                                          :handler (fn [res]
-                                                     (js/alert res))}))}]]]]]])})))
+                                     (PUT (str config/server-url "/api/users-district-id")
+                                          {:params  {:district-id @district-id
+                                                     :user-id     (session/get :user-id)}
+                                           :handler (fn [res]
+                                                      (js/alert res))}))}]]]]]]])})))

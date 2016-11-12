@@ -18,7 +18,9 @@
                  [cljsjs/marked "0.3.5-0"]
                  [org.clojure/core.async "0.2.385"]
                  [camel-snake-kebab "0.4.0"]
-                 [re-com "0.9.0"]]
+                 [re-com "0.9.0"]
+                 [cljsjs/handsontable "0.26.1-0"]
+                 [hoplon/javelin "3.8.4"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]

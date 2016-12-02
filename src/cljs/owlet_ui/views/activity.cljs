@@ -5,6 +5,7 @@
             [owlet-ui.components.activity.info :refer [activity-info]]
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
             [owlet-ui.components.activity.reflection :refer [activity-reflection]]
+            [owlet-ui.components.activity.examples :refer [examples-component]]
             [re-frame.core :as re]))
 
 (defn activity-view []
@@ -20,6 +21,7 @@
             [:div.hidden-sm-down
               [activity-reflection activity-data]]]
           [:div.activity-content.col-xs-12.col-lg-4
+            [examples-component]
             [activity-info activity-data]
             [:div.hidden-md-up
               [activity-reflection activity-data]]

@@ -9,7 +9,7 @@
      (fn []
        ;; disable auto discover of form.dropzone
        (set! (.-autoDiscover js/Dropzone) false)
-       (js/Dropzone. ".dropzone" #js {:url "/foobar"}))
+       (js/Dropzone. ".dropzone" #js {:url "http://localhost:3000/api/content/foobar"}))
      :reagent-render
      (fn []
        [:div.activity-examples-wrap.box-shadow

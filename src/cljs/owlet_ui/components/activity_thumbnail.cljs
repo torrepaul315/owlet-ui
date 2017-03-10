@@ -5,22 +5,22 @@
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged techRequirements skills]} fields
+        {:keys [title summary unplugged platform  skills]} fields
         set-as-showdown (fn [field & [class]]
                           [:div {:class class
                                  "dangerouslySetInnerHTML"
                                         #js{:__html (.makeHtml showdown (str field))}}])]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
-      [:a {:href     (str "#/activity/" entry-id)
+      [:a {:href     (str "#/activity/#!" entry-id)
            :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
        [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")}}
         [:mark.title title]]]
-      (if techRequirements
+      (if platform
        [:div.platform-wrap
         [:span "Platform: "]
         [:div.platform.btn
-          [set-as-showdown techRequirements]]]
+          [set-as-showdown platform ]]]
        [:div.platform-wrap
         [:div.unplugged.btn
          "UNPLUGGED"]])
@@ -28,4 +28,5 @@
       (when skills
         (for [c skills]
           ^{:key (gensym "skill-")}
-          [:span.tag c]))]]))
+          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
+            [:span c]]))]]))

@@ -14,7 +14,7 @@
   "
   (str config/server-url
        "/api/content/entries?library-view=true&space-id="
-       config/owlet-activities-2-space-id))
+       config/owlet-activities-3-space-id))
 
 
 (defn get-then-dispatch

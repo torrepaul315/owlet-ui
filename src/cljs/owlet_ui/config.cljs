@@ -14,7 +14,7 @@
 ;; to toggle this during development
 ;; http://localhost:3000
 (def server-url
-  "https://owlet-api.herokuapp.com")
+  "http://localhost:3000")
 
 
 (defonce auth0-local-storage-key "owlet:user-token")
@@ -47,9 +47,8 @@
    :storageBucket "owlet-users.appspot.com"})
 
 
-(def library-space-id "c7i369745nqp")
 (def owlet-activities-2-space-id "ir2v150dybog")
+(def owlet-activities-3-space-id "0okl2i5aeorb")
 
 
 (def default-header-bg-image "img/default_background.png")
-

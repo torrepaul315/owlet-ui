@@ -8,19 +8,19 @@
             [owlet-ui.firebase :as fb]
             [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.helpers :refer
-             [keywordize-name remove-nil parse-platform clean-search-term]]))
+             [keywordize-name remove-nil clean-search-term]]))
 
 
 (defonce library-content-url
          (str config/server-url
               "/api/content/entries?library-view=true&space-id="
-              config/owlet-activities-2-space-id))
+              config/owlet-activities-3-space-id))
 
 
 (defonce get-metadata-url
          (str config/server-url
               "/api/content/metadata/"
-              config/owlet-activities-2-space-id))
+              config/owlet-activities-3-space-id))
 
 
 (rf/reg-cofx
@@ -140,6 +140,10 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:get-library-content-from-contentful-successful]}})))
 
+(defn filter-by-content-type [content-type items]
+  (filter (fn [item]
+             (when (= content-type (get-in item [:sys :contentType :sys :id]))
+                item)) items))
 
 (rf/reg-event-db
   :get-library-content-from-contentful-successful
@@ -152,10 +156,14 @@
                (map (juxt (comp :id :sys)
                           (comp :url :file :fields)))
                (into {}))
-          _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
+          activity-items (filter-by-content-type "activity" (:items res))
+          platform-items (filter-by-content-type "platform" (:items res))
+          _db_ (assoc db  ; Return new db, adding :url field to its [... :sys] map.
+                ;TODO: process platform data -> name, description, id
+                 :platforms platform-items
                  :activities
                  (into []
-                       (for [item (:items res)
+                       (for [item activity-items
                              :let [activity (update-in item [:fields :preview :sys]
                                                        (fn [{id :id :as sys}]
                                                          (assoc sys :url (url-for-id id))))
@@ -192,8 +200,7 @@
     (let [branches (:branches res)
           skills (:skills res)
           all-activities (:activities db)
-          platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
-          platforms-nomalized (->> platforms (map parse-platform))
+          platforms (remove-nil (map #(get-in % [:fields :platform]) all-activities))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -231,14 +238,14 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
-                        :activity-platforms platforms-nomalized)))
+                        :activity-platforms platforms)))
           (when search
             (rf/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
                 :activity-titles activity-titles
-                :activity-platforms platforms-nomalized))))
+                :activity-platforms platforms))))
 
 
 (rf/reg-event-db
@@ -293,8 +300,7 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :platform])
-                                                                parse-platform)]
+                (let [filtered-set (filterv #(let [platform (get-in % [:fields :platform])]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
